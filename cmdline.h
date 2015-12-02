@@ -77,6 +77,19 @@ public:
   }
 };
 
+template <class T>
+  class lexical_cast_t<std::string, std::vector<T>, false>{
+public:
+  static std::string cast(const std::vector<T> &arg){
+    std::ostringstream ss;
+    for(typename std::vector<T>::const_iterator it = arg.begin(); 
+	it != arg.end(); ++it) {
+      ss<<*it;
+    }
+    return ss.str();
+  }
+};
+
 template <typename Target>
 class lexical_cast_t<Target, std::string, false>{
 public:

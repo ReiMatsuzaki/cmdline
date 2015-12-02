@@ -35,24 +35,39 @@ void check_complex() {
 }
 void check_vector() {
 
-  string arg("1,2,1");
+  string arg("1,2,-3");
   std::vector<int> xs = cmdline::detail::lexical_cast<std::vector<int>, string>(arg);
   check(1, xs[0], 1);
   check(2, xs[1], 2);
-  check(3, xs[2], 1);
+  check(3, xs[2], -3);
+
+}
+void check_vector_complex() {
+
+  string arg("1.02+0.2j,2.0+0.1j,0.1-0.2j");
+  std::vector<cd> xs = cmdline::detail::lexical_cast<std::vector<cd>, string>(arg);
+  check(1, xs[0], cd(1.02, 0.2));
+  check(2, xs[1], cd(2.0, 0.1));
+  check(3, xs[2], cd(0.1, -0.2));
+
 }
 
 int main(int argc, char *argv[]) {
   
   check_complex();
   check_vector();
+  check_vector_complex();
 
   cmdline::parser a;
   a.add<cd>("cval", 'c', "complex", true, cd(0.0));
+  a.add<std::vector<cd> >("xs", 'x', "complex list", true);;
 
   a.parse_check(argc, argv);
 
   cout << a.get<cd>("cval") << endl;
-
+  std::vector<cd> xs = a.get<std::vector<cd> >("xs");
+  for(std::vector<cd>::const_iterator it = xs.begin(); it != xs.end(); ++it) {
+    cout << *it << endl;
+  }
 }
 

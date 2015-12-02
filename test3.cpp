@@ -33,10 +33,19 @@ void check_complex() {
 	cd(1.234, -0.2));
   
 }
+void check_vector() {
+
+  string arg("1,2,1");
+  std::vector<int> xs = cmdline::detail::lexical_cast<std::vector<int>, string>(arg);
+  check(1, xs[0], 1);
+  check(2, xs[1], 2);
+  check(3, xs[2], 1);
+}
 
 int main(int argc, char *argv[]) {
   
   check_complex();
+  check_vector();
 
   cmdline::parser a;
   a.add<cd>("cval", 'c', "complex", true, cd(0.0));

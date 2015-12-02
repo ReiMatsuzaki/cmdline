@@ -40,6 +40,8 @@
 #include <cstdlib>
 #include <regex>
 
+#include <boost/algorithm/string.hpp>
+
 namespace cmdline{
 
 namespace detail{
@@ -110,6 +112,25 @@ public:
     } else {
       throw std::bad_cast();
     }
+  }
+};
+
+template<class T>
+class lexical_cast_t<std::vector<T>, std::string, false> {
+private:
+  typedef lexical_cast_t<T, std::string, false> cast_t;
+public:
+  static std::vector<T> cast(const std::string& arg) {
+    std::vector<std::string> xs;
+    boost::algorithm::split(xs, arg, boost::is_any_of(","));
+
+    std::vector<T> vs;
+    for(std::vector<std::string>::const_iterator it = xs.begin();
+	it != xs.end(); ++it) {
+      vs.push_back(cast_t::cast(*it));
+    }
+    
+    return vs;
   }
 };
 

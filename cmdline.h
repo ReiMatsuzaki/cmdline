@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <cxxabi.h>
 #include <cstdlib>
+#include <regex>
 
 namespace cmdline{
 
@@ -83,6 +84,28 @@ public:
     if (!(ss>>ret && ss.eof()))
       throw std::bad_cast();
     return ret;
+  }
+};
+
+template <>
+class lexical_cast_t<std::complex<double>, std::string, false> {
+public:
+  static std::complex<double> cast(const std::string& arg) {
+    std::regex re_plus("^(.*)\\+(.*)j$");
+    std::regex re_minus("^(.*)\\-(.*)j$");
+    std::cmatch match; 
+
+    if(std::regex_match(arg.c_str(), match, re_plus)) {
+      double r = lexical_cast_t<double, std::string, false>::cast(match.str(1));
+      double i = lexical_cast_t<double, std::string, false>::cast(match.str(2));
+      return std::complex<double>(r, i);
+    } else if(std::regex_match(arg.c_str(), match, re_minus)) {
+      double r = lexical_cast_t<double, std::string, false>::cast(match.str(1));
+      double i = lexical_cast_t<double, std::string, false>::cast(match.str(2));
+      return std::complex<double>(r, -i);
+    } else {
+      throw std::bad_cast();
+    }
   }
 };
 

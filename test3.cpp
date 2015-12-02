@@ -7,7 +7,6 @@
 //struct 
 
 using namespace std;
-using namespace cmdline::detail;
 typedef complex<double> cd;
 
 template<class T, class Label>

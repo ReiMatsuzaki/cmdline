@@ -87,22 +87,26 @@ public:
   }
 };
 
-template <>
-class lexical_cast_t<std::complex<double>, std::string, false> {
+template <class Scalar>
+class lexical_cast_t<std::complex<Scalar>, std::string, false> {
+private:
+  typedef typename std::complex<Scalar> complex;
+  typedef lexical_cast_t<Scalar, std::string, false> cast_t;
+
 public:
-  static std::complex<double> cast(const std::string& arg) {
+  static complex cast(const std::string& arg) {
     std::regex re_plus("^(.*)\\+(.*)j$");
     std::regex re_minus("^(.*)\\-(.*)j$");
     std::cmatch match; 
 
     if(std::regex_match(arg.c_str(), match, re_plus)) {
-      double r = lexical_cast_t<double, std::string, false>::cast(match.str(1));
-      double i = lexical_cast_t<double, std::string, false>::cast(match.str(2));
-      return std::complex<double>(r, i);
+      double r = cast_t::cast(match.str(1));
+      double i = cast_t::cast(match.str(2));
+      return complex(r, i);
     } else if(std::regex_match(arg.c_str(), match, re_minus)) {
-      double r = lexical_cast_t<double, std::string, false>::cast(match.str(1));
-      double i = lexical_cast_t<double, std::string, false>::cast(match.str(2));
-      return std::complex<double>(r, -i);
+      double r = cast_t::cast(match.str(1));
+      double i = cast_t::cast(match.str(2));
+      return complex(r, -i);
     } else {
       throw std::bad_cast();
     }
